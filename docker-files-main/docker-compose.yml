@@ -19,7 +19,7 @@ services:
         condition: on-failure
 
   auth-service:
-    image: auth-service
+    image: sebastianbadea0/auth-service:latest
     environment:
       - DATABASE_URL=postgresql://user:password@db:5432/fitnessdb
     ports:
@@ -32,7 +32,7 @@ services:
         condition: on-failure
 
   db-service:
-    image: db-service:1.0.0
+    image: sebastianbadea0/db-service:latest
     ports:
       - "5002:5002"
     networks:
@@ -43,7 +43,7 @@ services:
         condition: on-failure
 
   fitness-app:
-    image: fitness-app
+    image: sebastianbadea0/fitness_app:latest
     environment:
       - DATABASE_URL=postgresql://user:password@db:5432/fitnessdb
     ports:
