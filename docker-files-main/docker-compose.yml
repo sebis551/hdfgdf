@@ -100,12 +100,11 @@ services:
       - db
     volumes:
       - grafana_data:/var/lib/grafana
-      - ./provisioning/datasources:/etc/grafana/provisioning/datasources
-      - ./provisioning/dashboards:/etc/grafana/provisioning/dashboards
+      - ./monitoring-service-main/datasources:/etc/grafana/provisioning/datasources
+      - ./monitoring-service-main/dashboards:/etc/grafana/provisioning/dashboards
     deploy:
-      replicas: 1
-      restart_policy:
-        condition: on-failure
+      placement:
+        constraints: [node.role == manager]
 
   kong:
     image: kong:3.6
