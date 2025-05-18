@@ -43,7 +43,7 @@ services:
         condition: on-failure
 
   fitness-app:
-    image: sebastianbadea0/fitness_app:latest
+    image: sebastianbadea0/fitness-app:latest
     environment:
       - DATABASE_URL=postgresql://user:password@db:5432/fitnessdb
     ports:
