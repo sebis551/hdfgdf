@@ -100,8 +100,8 @@ services:
       - db
     volumes:
       - grafana_data:/var/lib/grafana
-      - ./monitoring-service-main/datasources:/etc/grafana/provisioning/datasources
-      - ./monitoring-service-main/dashboards:/etc/grafana/provisioning/dashboards
+      - /root/hdfgdf/monitoring-service-main/datasources:/etc/grafana/provisioning/datasources
+      - /root/hdfgdf/monitoring-service-main/dashboards:/etc/grafana/provisioning/dashboards
     deploy:
       placement:
         constraints: [node.role == manager]
