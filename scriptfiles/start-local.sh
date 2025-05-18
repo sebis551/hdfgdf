@@ -10,6 +10,6 @@ docker config create kong_config ./api-gateway-kong-main/kong.yml
 echo "Deploying stack to Docker Swarm..."
 docker stack deploy -c ./docker-files-main/docker-compose.yml fitnessapp
 
-docker service update --image sebastianbadea0/auth-service:latest auth-service
-docker service update --image sebastianbadea0/db-service:latest db-service
-docker service update --image sebastianbadea0/fitness-app:latest fitness-app
+docker service update --image sebastianbadea0/auth-service:latest fitnessapp_auth-service
+docker service update --image sebastianbadea0/db-service:latest fitnessapp_db-service
+docker service update --image sebastianbadea0/fitness-app:latest fitnessapp_fitness-app
