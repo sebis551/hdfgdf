@@ -19,7 +19,7 @@ services:
         condition: on-failure
 
   auth-service:
-    image: auth-service:1.0.0
+    image: auth-service
     environment:
       - DATABASE_URL=postgresql://user:password@db:5432/fitnessdb
     ports:
@@ -43,7 +43,7 @@ services:
         condition: on-failure
 
   fitness-app:
-    image: fitness-app:1.0.0
+    image: fitness-app
     environment:
       - DATABASE_URL=postgresql://user:password@db:5432/fitnessdb
     ports:
