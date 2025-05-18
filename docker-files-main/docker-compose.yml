@@ -109,8 +109,9 @@ services:
   kong:
     image: kong:3.6
     container_name: kong
-    volumes:
-      - ./api-gateway-kong-main/kong.yml:/usr/local/kong/declarative/kong.yml
+    configs:
+      - source: kong_config
+        target: /usr/local/kong/declarative/kong.yml
     environment:
       KONG_DATABASE: "off"
       KONG_DECLARATIVE_CONFIG: /usr/local/kong/declarative/kong.yml
@@ -138,3 +139,8 @@ networks:
   backend:
     driver: overlay
     attachable: true
+
+
+configs:
+  kong_config:
+    external: true
