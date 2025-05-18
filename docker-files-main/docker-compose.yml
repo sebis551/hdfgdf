@@ -1,0 +1,138 @@
+version: '3.8'
+
+services:
+  db:
+    image: postgres:13-alpine
+    environment:
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: fitnessdb
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    networks:
+      - backend
+    ports:
+      - "5432:5432"
+    deploy:
+      replicas: 1
+      restart_policy:
+        condition: on-failure
+
+  auth-service:
+    image: auth-service:1.0.0
+    environment:
+      - DATABASE_URL=postgresql://user:password@db:5432/fitnessdb
+    ports:
+      - "5001:5001"
+    networks:
+      - backend
+    deploy:
+      replicas: 2
+      restart_policy:
+        condition: on-failure
+
+  db-service:
+    image: db-service:1.0.0
+    ports:
+      - "5002:5002"
+    networks:
+      - backend
+    deploy:
+      replicas: 2
+      restart_policy:
+        condition: on-failure
+
+  fitness-app:
+    image: fitness-app:1.0.0
+    environment:
+      - DATABASE_URL=postgresql://user:password@db:5432/fitnessdb
+    ports:
+      - "5000:5000"
+    networks:
+      - backend
+    deploy:
+      replicas: 2
+      restart_policy:
+        condition: on-failure
+
+  portainer:
+    image: portainer/portainer-ce:2.20.1
+    ports:
+      - "9000:9000"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - portainer_data:/data
+    networks:
+      - backend
+    deploy:
+      replicas: 1
+      restart_policy:
+        condition: on-failure
+      placement:
+        constraints:
+          - node.role == manager
+
+  pgadmin:
+    image: dpage/pgadmin4:8.3
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@admin.com
+      PGADMIN_DEFAULT_PASSWORD: admin
+    ports:
+      - "8080:80"
+    volumes:
+      - pgadmin_data:/var/lib/pgadmin
+    networks:
+      - backend
+    deploy:
+      replicas: 1
+      restart_policy:
+        condition: on-failure
+
+  grafana:
+    image: grafana/grafana:9.0.0
+    environment:
+      GF_SECURITY_ADMIN_PASSWORD: admin
+    ports:
+      - "3000:3000"
+    networks:
+      - backend
+    depends_on:
+      - db
+    volumes:
+      - grafana_data:/var/lib/grafana
+      - ./provisioning/datasources:/etc/grafana/provisioning/datasources
+      - ./provisioning/dashboards:/etc/grafana/provisioning/dashboards
+    deploy:
+      replicas: 1
+      restart_policy:
+        condition: on-failure
+
+  kong:
+    image: kong:3.6
+    container_name: kong
+    volumes:
+      - ./kong.yml:/usr/local/kong/declarative/kong.yml
+    environment:
+      KONG_DATABASE: "off"
+      KONG_DECLARATIVE_CONFIG: /usr/local/kong/declarative/kong.yml
+      KONG_PROXY_ACCESS_LOG: /dev/stdout
+      KONG_ADMIN_ACCESS_LOG: /dev/stdout
+      KONG_PROXY_ERROR_LOG: /dev/stderr
+      KONG_ADMIN_ERROR_LOG: /dev/stderr
+      KONG_ADMIN_LISTEN: 0.0.0.0:8001
+    ports:
+      - "8000:8000"
+      - "8001:8001"
+    networks:
+      - backend
+
+volumes:
+  pgdata:
+  portainer_data:
+  pgadmin_data:
+  grafana_data:
+
+networks:
+  backend:
+    driver: overlay
+    attachable: true

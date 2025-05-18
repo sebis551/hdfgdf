@@ -1,0 +1,46 @@
+_format_version: "3.0"
+_transform: true
+
+services:
+  - name: fitness-app
+    url: http://fitness-app:5000
+    routes:
+      - name: fitness-app-route
+        paths:
+          - /
+        strip_path: false
+    plugins:
+      - name: jwt
+      - name: rate-limiting
+        config:
+          minute: 10
+          policy: local
+      - name: cors
+        config:
+          origins:
+            - "*"
+          methods:
+            - GET
+            - POST
+          headers:
+            - Authorization
+            - Content-Type
+          credentials: true
+      - name: bot-detection
+        config:
+          allow: []
+
+  - name: auth-service
+    url: http://auth-service:5001
+    routes:
+      - name: auth-service-route
+        paths:
+          - /auth
+        strip_path: true
+
+consumers:
+  - username: user1
+    custom_id: user1-id
+    jwt_secrets:
+      - key: my-secret-key
+        secret: my-jwt-secret
