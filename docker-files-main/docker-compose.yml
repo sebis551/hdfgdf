@@ -50,6 +50,7 @@ services:
       - "5000:5000"
     networks:
       - backend
+      - frontend
     deploy:
       replicas: 2
       restart_policy:
@@ -63,7 +64,7 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock
       - portainer_data:/data
     networks:
-      - backend
+      - management
     deploy:
       replicas: 1
       restart_policy:
@@ -82,7 +83,7 @@ services:
     volumes:
       - pgadmin_data:/var/lib/pgadmin
     networks:
-      - backend
+      - management
     deploy:
       replicas: 1
       restart_policy:
@@ -96,6 +97,7 @@ services:
       - "3000:3000"
     networks:
       - backend
+      - management
     depends_on:
       - db
     volumes:
@@ -123,11 +125,11 @@ services:
     ports:
       - "8000:8000"
       - "8001:8001"
+    networks:
+      - management
     deploy:
       placement:
         constraints: [node.role == manager]
-    networks:
-      - backend
 
 volumes:
   pgdata:
@@ -139,7 +141,12 @@ networks:
   backend:
     driver: overlay
     attachable: true
-
+  frontend:
+    driver: overlay
+    attachable: true
+  management:
+    driver: overlay
+    attachable: true
 
 configs:
   kong_config:
