@@ -3,6 +3,9 @@ docker build -t auth-service ./auth-service-main
 docker build -t fitness-app ./business-logic-service-main
 docker build -t db-service ./database-service-main
 
+docker config rm kong_config
+docker config create kong_config ./api-gateway-kong-main/kong.yml
+
 
 echo "Deploying stack to Docker Swarm..."
 docker stack deploy -c ./docker-files-main/docker-compose.yml fitnessapp
